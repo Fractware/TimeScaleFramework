@@ -1,0 +1,15 @@
+{
+	"name": "TimeScaleFramework",
+	"tree": {
+		"$className": "DataModel",
+
+		"ReplicatedStorage": {
+			"$className": "ReplicatedStorage",
+			"$ignoreUnknownInstances": true,
+
+			"TimeScaleFramework": {
+				"$path": "src"
+			}
+		}
+	}
+}
