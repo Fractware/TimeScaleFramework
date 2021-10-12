@@ -19,30 +19,30 @@ end
 local function AddAnimationTrack(Tagged)
 	if (Tagged:IsA("AnimationController") or Tagged:IsA("Animator") or Tagged:IsA("Humanoid")) and game:GetService("CollectionService"):HasTag(Tagged, "TimeScaleWhitelist") then
 		table.insert(Animators, Tagged)
-		
+
 		for _, AnimationTrack in pairs(Tagged:GetPlayingAnimationTracks()) do
 			table.insert(AnimationTracks, AnimationTrack)
 			AdjustSpeed(AnimationTrack)
-			
+
 			AnimationTrack.DidLoop:Connect(function()
 				AdjustSpeed(AnimationTrack)
 			end)
 		end
-		
+
 		Tagged.AnimationPlayed:Connect(function(AnimationTrack)
 			local Exists = false
-			
+
 			for _, Track in pairs(AnimationTracks) do
 				if Track == AnimationTrack then
 					Exists = true
 					break
 				end
 			end
-			
+
 			if not Exists then
 				table.insert(AnimationTracks, AnimationTrack)
 				AdjustSpeed(AnimationTrack)
-				
+
 				AnimationTrack.DidLoop:Connect(function()
 					AdjustSpeed(AnimationTrack)
 				end)
@@ -69,7 +69,7 @@ end
 
 game:GetService("ReplicatedStorage"):WaitForChild("TimeScaleUtilities"):GetAttributeChangedSignal("TimeScale"):Connect(function()
 	TimeScale = game:GetService("ReplicatedStorage").TimeScaleUtilities:GetAttribute("TimeScale")
-	
+
 	for _, AnimationTrack in pairs(AnimationTracks) do
 		AdjustSpeed(AnimationTrack)
 	end

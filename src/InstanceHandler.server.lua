@@ -3,7 +3,7 @@ local TimeModule = require(script.Parent.Time)
 
 local function AddInstance(Object)
 	local TimeScale = DataModule.TimeScale
-	
+
 	if Object:IsA("AlignOrientation") then
 		DataModule.PhysicsObjects.AlignOrientation[Object] = true
 	elseif Object:IsA("AlignPosition") then
@@ -33,7 +33,7 @@ local function AddInstance(Object)
 	elseif Object:IsA("VectorForce") then
 		DataModule.PhysicsObjects.VectorForce[Object] = true
 	end
-	
+
 	if TimeScale ~= 1 then
 		TimeModule:Apply(Object)
 	end
@@ -43,7 +43,7 @@ local function RemoveInstance(Object)
 	if DataModule.TimeScale ~= 1 then
 		TimeModule:Apply(Object)
 	end
-	
+
 	if Object:IsA("AlignOrientation") then
 		DataModule.PhysicsObjects.AlignOrientation[Object] = nil
 	elseif Object:IsA("AlignPosition") then
