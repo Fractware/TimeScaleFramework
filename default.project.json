@@ -1,0 +1,15 @@
+{
+	"name": "TimeScaleFramework",
+	"tree": {
+		"$className": "DataModel",
+
+		"ServerScriptService": {
+			"$className": "ServerScriptService",
+			"$ignoreUnknownInstances": true,
+
+			"TimeScaleFramework": {
+				"$path": "src"
+			}
+		}
+	}
+}

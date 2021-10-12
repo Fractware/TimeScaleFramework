@@ -1,0 +1,21 @@
+return {
+	GravityAttachments = {},
+	GravityForces = {},
+	PhysicsObjects = {
+		AlignOrientation = {},
+		AlignPosition = {},
+		AngularVelocity = {},
+		BasePart = {},
+		BodyVelocity = {},
+		HingeConstraint = {},
+		Humanoid = {},
+		LinearVelocity = {},
+		LineForce = {},
+		Model = {},
+		ParticleEmitter = {},
+		PrismaticConstraint = {},
+		Torque = {},
+		VectorForce = {},
+	},
+	TimeScale = game:GetService("ReplicatedStorage"):WaitForChild("TimeScaleUtilities"):GetAttribute("TimeScale"),
+}
