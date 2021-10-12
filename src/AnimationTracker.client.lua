@@ -1,10 +1,10 @@
 local AnimationTracks = {}
 local Animators = {}
 local StandardSpeeds = {}
-local TimeScale = 1
+local TimeScale = game:GetService("ReplicatedStorage"):WaitForChild("TimeScaleUtilities"):GetAttribute("TimeScale")
 
 local function AdjustSpeed(AnimationTrack)
-	for _, Animator in pairs(Animators) do
+	for Animator, _ in pairs(Animators) do
 		for _, AnimatorAnimationTrack in pairs(Animator:GetPlayingAnimationTracks()) do
 			if AnimatorAnimationTrack == AnimationTrack then
 				if game:GetService("CollectionService"):HasTag(Animator, "TimeScaleWhitelist") then
@@ -16,55 +16,49 @@ local function AdjustSpeed(AnimationTrack)
 	end
 end
 
-local function AddAnimationTrack(Tagged)
-	if (Tagged:IsA("AnimationController") or Tagged:IsA("Animator") or Tagged:IsA("Humanoid")) and game:GetService("CollectionService"):HasTag(Tagged, "TimeScaleWhitelist") then
-		table.insert(Animators, Tagged)
+local function AddAnimationTrack(AnimationTrack)
+	if not AnimationTracks[AnimationTrack] then
+		AnimationTracks[AnimationTrack] = true
 
-		for _, AnimationTrack in pairs(Tagged:GetPlayingAnimationTracks()) do
-			table.insert(AnimationTracks, AnimationTrack)
+		AdjustSpeed(AnimationTrack)
+
+		AnimationTrack.DidLoop:Connect(function()
 			AdjustSpeed(AnimationTrack)
-
-			AnimationTrack.DidLoop:Connect(function()
-				AdjustSpeed(AnimationTrack)
-			end)
-		end
-
-		Tagged.AnimationPlayed:Connect(function(AnimationTrack)
-			local Exists = false
-
-			for _, Track in pairs(AnimationTracks) do
-				if Track == AnimationTrack then
-					Exists = true
-					break
-				end
-			end
-
-			if not Exists then
-				table.insert(AnimationTracks, AnimationTrack)
-				AdjustSpeed(AnimationTrack)
-
-				AnimationTrack.DidLoop:Connect(function()
-					AdjustSpeed(AnimationTrack)
-				end)
-			end
 		end)
 	end
 end
 
-game:GetService("CollectionService"):GetInstanceAddedSignal("TimeScaleWhitelist"):Connect(function(Tagged)
-	AddAnimationTrack(Tagged)
+local function AddAnimator(Animator)
+	if (Animator:IsA("AnimationController") or Animator:IsA("Animator") or Animator:IsA("Humanoid")) and game:GetService("CollectionService"):HasTag(Animator, "TimeScaleWhitelist") then
+		Animators[Animator] = true
+
+		for _, AnimationTrack in pairs(Animator:GetPlayingAnimationTracks()) do
+			AddAnimationTrack(AnimationTrack)
+		end
+
+		Animator.AnimationPlayed:Connect(function(AnimationTrack)
+			AddAnimationTrack(AnimationTrack)
+		end)
+	end
+end
+
+game:GetService("CollectionService"):GetInstanceAddedSignal("TimeScaleWhitelist"):Connect(function(Animator)
+	AddAnimator(Animator)
 end)
 
-game:GetService("CollectionService"):GetInstanceRemovedSignal("TimeScaleWhitelist"):Connect(function(Tagged)
-	if (Tagged:IsA("AnimationController") or Tagged:IsA("Animator") or Tagged:IsA("Humanoid")) and game:GetService("CollectionService"):HasTag(Tagged, "TimeScaleWhitelist") then
-		for _, AnimationTrack in pairs(Tagged:GetPlayingAnimationTracks()) do
+game:GetService("CollectionService"):GetInstanceRemovedSignal("TimeScaleWhitelist"):Connect(function(Animator)
+	if (Animator:IsA("AnimationController") or Animator:IsA("Animator") or Animator:IsA("Humanoid")) and game:GetService("CollectionService"):HasTag(Animator, "TimeScaleWhitelist") then
+		for _, AnimationTrack in pairs(Animator:GetPlayingAnimationTracks()) do
 			AnimationTrack:AdjustSpeed(AnimationTrack.Length / (AnimationTrack.Length * 1))
+			AnimationTracks[AnimationTrack] = nil
 		end
+
+		Animators[Animator] = nil
 	end
 end)
 
-for _, Tagged in pairs(game:GetService("CollectionService"):GetTagged("TimeScaleWhitelist")) do
-	AddAnimationTrack(Tagged)
+for _, Animator in pairs(game:GetService("CollectionService"):GetTagged("TimeScaleWhitelist")) do
+	AddAnimator(Animator)
 end
 
 game:GetService("ReplicatedStorage"):WaitForChild("TimeScaleUtilities"):GetAttributeChangedSignal("TimeScale"):Connect(function()
