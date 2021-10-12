@@ -1,4 +1,4 @@
-# TimeScaleFramework
+# Time Scale Framework
 
 ## Summary :zap:
 Framework to change the speed of time on Roblox.
