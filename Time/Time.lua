@@ -18,17 +18,6 @@ local function Set(Object)
 	else
 		SlowerModule:Apply(TimeScaleDifference, Object)
 	end
-	
-	if Object then
-		-- Only affect tweens for the specified object.
-	else
-		for _, Data in pairs(TimeScaleUtilities.TweenService.Tweens) do
-			Data.Tween:Cancel()
-			Data.TweenInfo = TweenInfo.new(Data.TweenInfo.Time / TimeScale, Data.TweenInfo.EasingStyle, Data.TweenInfo.EasingDirection, Data.TweenInfo.RepeatCount, Data.TweenInfo.Reverses, Data.TweenInfo.DelayTime)
-			Data.Tween = game:GetService("TweenService"):Create(Data.Instance, Data.TweenInfo, Data.Goal)
-			Data.Tween:Play()
-		end
-	end
 end
 
 local function Unset(Object)
