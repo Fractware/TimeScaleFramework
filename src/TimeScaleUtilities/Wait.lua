@@ -1,30 +1,37 @@
 local Module = {}
 
+local TimeScale = script.Parent:GetAttribute("TimeScale")
+script.Parent:GetAttributeChangedSignal("TimeScale"):Connect(function()
+	TimeScale = script.Parent:GetAttribute("TimeScale")
+end)
+
 local Timers = {}
 
 local TimeElapsed = 0
 
 function Module:Wait(WaitTime)
 	WaitTime = WaitTime or 0
-	local WaitBindable = Instance.new("BindableEvent")
 	
-	Timers[WaitBindable] = TimeElapsed + WaitTime
+	local Thread = coroutine.running()
+	local TimeElapsed = 0
 	
-	WaitBindable.Event:Wait()
+	local Connection
 	
-	Timers[WaitBindable] = nil
-	
-	return true
-end
-
-game:GetService("RunService").Heartbeat:Connect(function(Step)
-	TimeElapsed += (Step / script.Parent:GetAttribute("TimeScale"))
-	
-	for WaitBindable, TargetTime in pairs(Timers) do
-		if TimeElapsed >= TargetTime then
-			WaitBindable:Fire()
+	Connection = game:GetService("RunService").Heartbeat:Connect(function(DeltaTime)
+		if Connection == nil then
+			return
 		end
-	end
-end)
+		
+		TimeElapsed += DeltaTime / TimeScale
+		if TimeElapsed >= WaitTime then
+			Connection:Disconnect()
+			Connection = nil
+			
+			task.spawn(Thread, TimeElapsed)
+		end
+	end)
+	
+	return coroutine.yield()
+end
 
 return Module
