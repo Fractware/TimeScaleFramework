@@ -44,15 +44,17 @@ function Module:Set(Object, State)
 			
 			CreateGravityForce(TimeScale, Object, AffectObject(Object, TimeScale))
 		elseif Object:IsA("Model") then
-			local TotalMass = 0
-			
-			for _, Descendant in pairs(Object:GetDescendants()) do
-				if Descendant:IsA("BasePart") then
-					TotalMass += AffectObject(Object)
+			if Object.PrimaryPart then
+				local TotalMass = 0
+				
+				for _, Descendant in pairs(Object:GetDescendants()) do
+					if Descendant:IsA("BasePart") then
+						TotalMass += AffectObject(Object)
+					end
 				end
+				
+				CreateGravityForce(TimeScale, Object.PrimaryPart, TotalMass)
 			end
-			
-			CreateGravityForce(TimeScale, Object.PrimaryPart, TotalMass)
 		end
 	else
 		if GravityForces[Object] then
