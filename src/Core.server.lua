@@ -1,17 +1,15 @@
-script.Parent.TimeScaleUtilities.Parent = game:GetService("ReplicatedStorage")
+local TimeScaleUtilities = script.Parent.TimeScaleUtilities
+
+TimeScaleUtilities.Parent = game:GetService("ReplicatedStorage")
 
 local DataModule = require(script.Parent.Data)
 local TimeModule = require(script.Parent.Time)
 
-local PreviousTimeScaleCache = game:GetService("ReplicatedStorage").TimeScaleUtilities:GetAttribute("TimeScale")
-
-game:GetService("ReplicatedStorage").TimeScaleUtilities:GetAttributeChangedSignal("TimeScale"):Connect(function()
-	script.Parent.Time:SetAttribute("PreviousTimeScale", PreviousTimeScaleCache)
+TimeScaleUtilities:GetAttributeChangedSignal("TimeScale"):Connect(function()
+	script.Parent.Time:SetAttribute("PreviousTimeScale", DataModule.TimeScale)
 	
-	DataModule.TimeScale = game:GetService("ReplicatedStorage").TimeScaleUtilities:GetAttribute("TimeScale")
+	DataModule.TimeScale = TimeScaleUtilities:GetAttribute("TimeScale")
 	TimeModule:Apply()
-	
-	PreviousTimeScaleCache = game:GetService("ReplicatedStorage").TimeScaleUtilities:GetAttribute("TimeScale")
 end)
 
 script.Parent.AnimationTracker.Parent = game:GetService("ReplicatedFirst")
