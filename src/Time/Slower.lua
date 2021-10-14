@@ -20,10 +20,12 @@ local ApplyMethods = {
 		)
 	end,
 	["BasePart"] = function(TimeScaleDifference, Object)
-		ForcesModule:Set(Object, true)
-		
-		Object.AssemblyAngularVelocity /= TimeScaleDifference
-		Object.AssemblyLinearVelocity /= TimeScaleDifference
+		if Object.Parent:IsA("Model") and Object.Parent ~= game:GetService("Workspace") and game:GetService("CollectionService"):HasTag(Object.Parent, "TimeScaleWhitelist") then
+			ForcesModule:Set(Object, true)
+			
+			Object.AssemblyAngularVelocity /= TimeScaleDifference
+			Object.AssemblyLinearVelocity /= TimeScaleDifference
+		end
 	end,
 	["HingeConstraint"] = function(TimeScaleDifference, Object)
 		Object.AngularSpeed /= TimeScaleDifference
@@ -53,7 +55,7 @@ local ApplyMethods = {
 		if Object.PrimaryPart then
 			ForcesModule:Set(Object, true)
 		end
-
+		
 		for _, Descendant in pairs(Object:GetDescendants()) do
 			Module:Apply(TimeScaleDifference, Descendant)
 		end
