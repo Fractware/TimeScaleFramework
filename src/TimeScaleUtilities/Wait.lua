@@ -2,11 +2,13 @@ local Module = {}
 
 local Timers = {}
 
+local TimeElapsed = 0
+
 function Module:Wait(WaitTime)
 	WaitTime = WaitTime or 0
 	local WaitBindable = Instance.new("BindableEvent")
 	
-	Timers[WaitBindable] = {Time = WaitTime, TimeElapsed = 0}
+	Timers[WaitBindable] = TimeElapsed + WaitTime
 	
 	WaitBindable.Event:Wait()
 	
@@ -16,9 +18,10 @@ function Module:Wait(WaitTime)
 end
 
 game:GetService("RunService").Heartbeat:Connect(function(Step)
-	for WaitBindable, Data in pairs(Timers) do
-		Data.TimeElapsed += (Step / script.Parent:GetAttribute("TimeScale"))
-		if Data.TimeElapsed >= Data.Time then
+	TimeElapsed += (Step / script.Parent:GetAttribute("TimeScale"))
+	
+	for WaitBindable, TargetTime in pairs(Timers) do
+		if TimeElapsed >= TargetTime then
 			WaitBindable:Fire()
 		end
 	end
