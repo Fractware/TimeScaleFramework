@@ -1,10 +1,5 @@
 local Module = {}
 
-local TimeScale = script.Parent:GetAttribute("TimeScale")
-script.Parent:GetAttributeChangedSignal("TimeScale"):Connect(function()
-	TimeScale = script.Parent:GetAttribute("TimeScale")
-end)
-
 local Timers = {}
 
 local TimeElapsed = 0
@@ -22,7 +17,7 @@ function Module:Wait(WaitTime)
 			return
 		end
 		
-		TimeElapsed += DeltaTime / TimeScale
+		TimeElapsed += DeltaTime / script.Parent:GetAttribute("TimeScale")
 		if TimeElapsed >= WaitTime then
 			Connection:Disconnect()
 			Connection = nil
