@@ -5,9 +5,8 @@ local TimeScaleUtilities = game:GetService("ReplicatedStorage"):WaitForChild("Ti
 local AnimationTracks = {}
 local Animators = {}
 local StandardSpeeds = {}
-local TimeScale = TimeScaleUtilities:GetAttribute("TimeScale")
 
-local function AdjustSpeed(AnimationTrack)
+local function AdjustSpeed(AnimationTrack, TimeScale)
 	for Animator, _ in pairs(Animators) do
 		for _, AnimatorAnimationTrack in pairs(Animator:GetPlayingAnimationTracks()) do
 			if AnimatorAnimationTrack == AnimationTrack then
@@ -66,9 +65,9 @@ for _, Animator in pairs(CollectionService:GetTagged("TimeScaleWhitelist")) do
 end
 
 TimeScaleUtilities:GetAttributeChangedSignal("TimeScale"):Connect(function()
-	TimeScale = TimeScaleUtilities:GetAttribute("TimeScale")
+	local TimeScale = TimeScaleUtilities:GetAttribute("TimeScale")
 	
 	for _, AnimationTrack in pairs(AnimationTracks) do
-		AdjustSpeed(AnimationTrack)
+		AdjustSpeed(AnimationTrack, TimeScale)
 	end
 end)
