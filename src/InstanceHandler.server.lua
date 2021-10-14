@@ -1,3 +1,5 @@
+local CollectionService = game:GetService("CollectionService")
+
 local DataModule = require(script.Parent.Data)
 local TimeModule = require(script.Parent.Time)
 
@@ -37,14 +39,14 @@ local function RemoveInstance(Object)
 	end
 end
 
-for _, Object in pairs(game:GetService("CollectionService"):GetTagged("TimeScaleWhitelist")) do
+for _, Object in pairs(CollectionService:GetTagged("TimeScaleWhitelist")) do
 	AddInstance(Object)
 end
 
-game:GetService("CollectionService"):GetInstanceAddedSignal("TimeScaleWhitelist"):Connect(function(Object)
+CollectionService:GetInstanceAddedSignal("TimeScaleWhitelist"):Connect(function(Object)
 	AddInstance(Object)
 end)
 
-game:GetService("CollectionService"):GetInstanceRemovedSignal("TimeScaleWhitelist"):Connect(function(Object)
+CollectionService:GetInstanceRemovedSignal("TimeScaleWhitelist"):Connect(function(Object)
 	RemoveInstance(Object)
 end)
