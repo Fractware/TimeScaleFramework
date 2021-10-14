@@ -32,7 +32,7 @@ local function AffectObject(Object, TimeScale)
 		Object.CustomPhysicalProperties.ElasticityWeight
 	)
 	
-	return Object:GetMass()
+	return Object.Mass
 end
 
 function Module:Set(Object, State)
