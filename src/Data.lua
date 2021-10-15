@@ -14,5 +14,6 @@ return {
 		["Torque"] = {},
 		["VectorForce"] = {},
 	},
+	PreviousTimeScale = game:GetService("ReplicatedStorage"):WaitForChild("TimeScaleUtilities"):GetAttribute("TimeScale"),
 	TimeScale = game:GetService("ReplicatedStorage"):WaitForChild("TimeScaleUtilities"):GetAttribute("TimeScale"),
 }
