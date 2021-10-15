@@ -6,7 +6,7 @@ local DataModule = require(script.Parent.Data)
 local TimeModule = require(script.Parent.Time)
 
 TimeScaleUtilities:GetAttributeChangedSignal("TimeScale"):Connect(function()
-	TimeModule.PreviousTimeScale = DataModule.TimeScale
+	DataModule.PreviousTimeScale = DataModule.TimeScale
 	
 	DataModule.TimeScale = TimeScaleUtilities:GetAttribute("TimeScale")
 	TimeModule:Apply()
