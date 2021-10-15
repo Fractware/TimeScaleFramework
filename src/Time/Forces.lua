@@ -21,35 +21,43 @@ local function CreateGravityForce(TimeScale, Object, TotalMass)
 	GravityForce.Parent = Object
 end
 
-local function AffectObject(Object, TimeScale)
+local function AffectObject(Object, TimeScale, State)
 	Object.CustomPhysicalProperties = Object.CustomPhysicalProperties or PhysicalProperties.new(Object.Material)
 	
-	Object.CustomPhysicalProperties = PhysicalProperties.new(
-		Object.CustomPhysicalProperties.Density,
-		Object.CustomPhysicalProperties.Friction / TimeScale,
-		Object.CustomPhysicalProperties.Elasticity * TimeScale,
-		Object.CustomPhysicalProperties.FrictionWeight,
-		Object.CustomPhysicalProperties.ElasticityWeight
-	)
+	if State then
+		Object.CustomPhysicalProperties = PhysicalProperties.new(
+			Object.CustomPhysicalProperties.Density / TimeScale,
+			Object.CustomPhysicalProperties.Friction / TimeScale,
+			Object.CustomPhysicalProperties.Elasticity,
+			Object.CustomPhysicalProperties.FrictionWeight,
+			Object.CustomPhysicalProperties.ElasticityWeight
+		)
+	else
+		Object.CustomPhysicalProperties = PhysicalProperties.new(
+			Object.CustomPhysicalProperties.Density * TimeScale,
+			Object.CustomPhysicalProperties.Friction * TimeScale,
+			Object.CustomPhysicalProperties.Elasticity,
+			Object.CustomPhysicalProperties.FrictionWeight,
+			Object.CustomPhysicalProperties.ElasticityWeight
+		)
+	end
 	
 	return Object.Mass
 end
 
 function Module:Set(Object, State)
+	local TimeScale = DataModule.TimeScale
+	
 	if State then
-		local TimeScale = DataModule.TimeScale
-		
 		if Object:IsA("BasePart") then
-			local TimeScale = DataModule.TimeScale
-			
-			CreateGravityForce(TimeScale, Object, AffectObject(Object, TimeScale))
+			CreateGravityForce(TimeScale, Object, AffectObject(Object, TimeScale, State))
 		elseif Object:IsA("Model") then
 			if Object.PrimaryPart then
 				local TotalMass = 0
 				
 				for _, Descendant in pairs(Object:GetDescendants()) do
 					if Descendant:IsA("BasePart") then
-						TotalMass += AffectObject(Object)
+						TotalMass += AffectObject(Object, TimeScale, State)
 					end
 				end
 				
@@ -57,6 +65,16 @@ function Module:Set(Object, State)
 			end
 		end
 	else
+		if Object:IsA("BasePart") then
+			AffectObject(Object, TimeScale, State)
+		elseif Object:IsA("Model") then
+			for _, Descendant in pairs(Object:GetDescendants()) do
+				if Descendant:IsA("BasePart") then
+					AffectObject(Object, TimeScale, State)
+				end
+			end
+		end
+		
 		if GravityForces[Object] then
 			GravityForces[Object]:Destroy()
 		end
