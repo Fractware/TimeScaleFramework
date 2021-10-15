@@ -20,12 +20,14 @@ local ApplyMethods = {
 		)
 	end,
 	["BasePart"] = function(TimeScaleDifference, Object)
-		if Object.Parent:IsA("Model") and Object.Parent ~= game:GetService("Workspace") and not game:GetService("CollectionService"):HasTag(Object.Parent, "TimeScaleWhitelist") then
-			ForcesModule:Set(Object, true)
-			
-			Object.AssemblyAngularVelocity /= TimeScaleDifference
-			Object.AssemblyLinearVelocity /= TimeScaleDifference
+		if Object.Parent:IsA("Model") and Object.Parent ~= game:GetService("Workspace") and game:GetService("CollectionService"):HasTag(Object.Parent, "TimeScaleWhitelist") then
+			return
 		end
+		
+		ForcesModule:Set(Object, true)
+		
+		Object.AssemblyAngularVelocity /= TimeScaleDifference
+		Object.AssemblyLinearVelocity /= TimeScaleDifference
 	end,
 	["HingeConstraint"] = function(TimeScaleDifference, Object)
 		Object.AngularSpeed /= TimeScaleDifference
