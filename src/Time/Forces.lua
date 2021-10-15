@@ -34,8 +34,8 @@ local function AffectObject(Object, TimeScale, State)
 		)
 	else
 		Object.CustomPhysicalProperties = PhysicalProperties.new(
-			Object.CustomPhysicalProperties.Density * TimeScale,
-			Object.CustomPhysicalProperties.Friction * TimeScale,
+			Object.CustomPhysicalProperties.Density * DataModule.PreviousTimeScale,
+			Object.CustomPhysicalProperties.Friction * DataModule.PreviousTimeScale,
 			Object.CustomPhysicalProperties.Elasticity,
 			Object.CustomPhysicalProperties.FrictionWeight,
 			Object.CustomPhysicalProperties.ElasticityWeight
