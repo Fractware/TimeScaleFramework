@@ -21,44 +21,60 @@ local function CreateGravityForce(TimeScale, Object, TotalMass)
 	GravityForce.Parent = Object
 end
 
-function Module:Set(Object, State)
+local function AffectObject(Object, TimeScale, State)
+	Object.CustomPhysicalProperties = Object.CustomPhysicalProperties or PhysicalProperties.new(Object.Material)
+	
 	if State then
-		local TimeScale = DataModule.TimeScale
-		
+		Object.CustomPhysicalProperties = PhysicalProperties.new(
+			Object.CustomPhysicalProperties.Density,
+			Object.CustomPhysicalProperties.Friction / TimeScale,
+			Object.CustomPhysicalProperties.Elasticity,
+			Object.CustomPhysicalProperties.FrictionWeight,
+			Object.CustomPhysicalProperties.ElasticityWeight
+		)
+	else
+		Object.CustomPhysicalProperties = PhysicalProperties.new(
+			Object.CustomPhysicalProperties.Density,
+			Object.CustomPhysicalProperties.Friction * DataModule.PreviousTimeScale,
+			Object.CustomPhysicalProperties.Elasticity,
+			Object.CustomPhysicalProperties.FrictionWeight,
+			Object.CustomPhysicalProperties.ElasticityWeight
+		)
+	end
+	
+	return Object.Mass
+end
+
+function Module:Set(Object, State)
+	local TimeScale = DataModule.TimeScale
+	
+	if State then
 		if Object:IsA("BasePart") then
-			Object.CustomPhysicalProperties = Object.CustomPhysicalProperties or PhysicalProperties.new(Object.Material)
-			
-			Object.CustomPhysicalProperties = PhysicalProperties.new(
-				Object.CustomPhysicalProperties.Density,
-				Object.CustomPhysicalProperties.Friction / TimeScale,
-				Object.CustomPhysicalProperties.Elasticity * TimeScale,
-				Object.CustomPhysicalProperties.FrictionWeight,
-				Object.CustomPhysicalProperties.ElasticityWeight
-			)
-			
-			CreateGravityForce(TimeScale, Object, Object.Mass)
+			CreateGravityForce(TimeScale, Object, AffectObject(Object, TimeScale, State))
 		elseif Object:IsA("Model") then
-			local TotalMass = 0
-			
-			for _, Descendant in pairs(Object:GetDescendants()) do
-				if Descendant:IsA("BasePart") then
-					Descendant.CustomPhysicalProperties = Descendant.CustomPhysicalProperties or PhysicalProperties.new(Descendant.Material)
-					
-					Descendant.CustomPhysicalProperties = PhysicalProperties.new(
-						Descendant.CustomPhysicalProperties.Density,
-						Descendant.CustomPhysicalProperties.Friction / TimeScale,
-						Descendant.CustomPhysicalProperties.Elasticity * TimeScale,
-						Descendant.CustomPhysicalProperties.FrictionWeight,
-						Descendant.CustomPhysicalProperties.ElasticityWeight
-					)
-					
-					TotalMass += Descendant.Mass
+			if Object.PrimaryPart then
+				local TotalMass = 0
+				
+				for _, Descendant in pairs(Object:GetDescendants()) do
+					if Descendant:IsA("BasePart") then
+						TotalMass += AffectObject(Object, TimeScale, State)
+					end
 				end
+				
+				CreateGravityForce(TimeScale, Object.PrimaryPart, TotalMass)
 			end
-			
-			CreateGravityForce(TimeScale, Object.PrimaryPart, TotalMass)
 		end
 	else
+		if Object:IsA("BasePart") then
+			AffectObject(Object, TimeScale, State)
+		elseif Object:IsA("Model") then
+			for _, Descendant in pairs(Object:GetDescendants()) do
+				if Descendant:IsA("BasePart") then
+					AffectObject(Object, TimeScale, State)
+				end
+			end
+		end
+		
 		if GravityForces[Object] then
 			GravityForces[Object]:Destroy()
 		end
