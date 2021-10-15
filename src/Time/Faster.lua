@@ -20,7 +20,7 @@ local ApplyMethods = {
 		)
 	end,
 	["BasePart"] = function(TimeScaleDifference, Object)
-		if Object.Parent:IsA("Model") and Object.Parent ~= game:GetService("Workspace") and game:GetService("CollectionService"):HasTag(Object.Parent, "TimeScaleWhitelist") then
+		if Object.Parent:IsA("Model") and Object.Parent ~= game:GetService("Workspace") and not game:GetService("CollectionService"):HasTag(Object.Parent, "TimeScaleWhitelist") then
 			ForcesModule:Set(Object, false)
 			
 			Object.AssemblyAngularVelocity *= TimeScaleDifference
