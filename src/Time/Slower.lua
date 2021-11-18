@@ -14,10 +14,10 @@ local ApplyMethods = {
 	end,
 	["AngularVelocity"] = function(TimeScaleDifference, Object)
 		Object.AngularVelocity = Vector3.new(
-			Object.AngularVelocity.X / TimeScaleDifference,
-			Object.AngularVelocity.Y / TimeScaleDifference,
-			Object.AngularVelocity.Z / TimeScaleDifference
-		)
+			Object.AngularVelocity.X,
+			Object.AngularVelocity.Y,
+			Object.AngularVelocity.Z
+		) / TimeScaleDifference
 	end,
 	["BasePart"] = function(TimeScaleDifference, Object)
 		if Object.Parent:IsA("Model") and Object.Parent ~= game:GetService("Workspace") and game:GetService("CollectionService"):HasTag(Object.Parent, "TimeScaleWhitelist") then
@@ -32,6 +32,7 @@ local ApplyMethods = {
 	["HingeConstraint"] = function(TimeScaleDifference, Object)
 		Object.AngularSpeed /= TimeScaleDifference
 		Object.AngularVelocity /= TimeScaleDifference
+		Object.MotorMaxAcceleration /= TimeScaleDifference
 		Object.MotorMaxTorque /= TimeScaleDifference
 		Object.ServoMaxTorque /= TimeScaleDifference
 	end,
@@ -41,14 +42,14 @@ local ApplyMethods = {
 	["LinearVelocity"] = function(TimeScaleDifference, Object)
 		Object.LineVelocity /= TimeScaleDifference
 		Object.PlaneVelocity = Vector2.new(
-			Object.PlaneVelocity.X / TimeScaleDifference,
-			Object.PlaneVelocity.Y / TimeScaleDifference
-		)
+			Object.PlaneVelocity.X,
+			Object.PlaneVelocity.Y
+		) / TimeScaleDifference
 		Object.VectorVelocity = Vector3.new(
-			Object.VectorVelocity.X / TimeScaleDifference,
-			Object.VectorVelocity.Y / TimeScaleDifference,
-			Object.VectorVelocity.Z / TimeScaleDifference
-		)
+			Object.VectorVelocity.X,
+			Object.VectorVelocity.Y,
+			Object.VectorVelocity.Z
+		) / TimeScaleDifference
 	end,
 	["LineForce"] = function(TimeScaleDifference, Object)
 		Object.Magnitude /= TimeScaleDifference
