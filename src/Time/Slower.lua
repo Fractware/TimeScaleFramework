@@ -3,66 +3,89 @@ local Module = {}
 local DataModule = require(script.Parent.Parent.Data)
 local ForcesModule = require(script.Parent.Forces)
 
-function Module:Apply(TimeScaleDifference, Object)
-	if Object:IsA("AlignOrientation") then
+local ApplyMethods = {
+	["AlignOrientation"] = function(TimeScaleDifference, Object)
 		Object.MaxAngularVelocity /= TimeScaleDifference
 		Object.MaxTorque /= TimeScaleDifference
-	elseif Object:IsA("AlignPosition") then
+	end,
+	["AlignPosition"] = function(TimeScaleDifference, Object)
 		Object.MaxForce /= TimeScaleDifference
 		Object.MaxVelocity /= TimeScaleDifference
-	elseif Object:IsA("AngularVelocity") then
+	end,
+	["AngularVelocity"] = function(TimeScaleDifference, Object)
 		Object.AngularVelocity = Vector3.new(
-			Object.AngularVelocity.X / TimeScaleDifference,
-			Object.AngularVelocity.Y / TimeScaleDifference,
-			Object.AngularVelocity.Z / TimeScaleDifference
-		)
-	elseif Object:IsA("BasePart") then
+			Object.AngularVelocity.X,
+			Object.AngularVelocity.Y,
+			Object.AngularVelocity.Z
+		) / TimeScaleDifference
+	end,
+	["BasePart"] = function(TimeScaleDifference, Object)
+		if Object.Parent:IsA("Model") and Object.Parent ~= game:GetService("Workspace") and game:GetService("CollectionService"):HasTag(Object.Parent, "TimeScaleWhitelist") then
+			return
+		end
+		
 		ForcesModule:Set(Object, true)
 		
 		Object.AssemblyAngularVelocity /= TimeScaleDifference
 		Object.AssemblyLinearVelocity /= TimeScaleDifference
-	elseif Object:IsA("BodyVelocity") then -- Soon to be replaced with LinearVelocity.
-		Object.MaxForce /= TimeScaleDifference
-		Object.Velocity /= TimeScaleDifference
-	elseif Object:IsA("HingeConstraint") then
+	end,
+	["HingeConstraint"] = function(TimeScaleDifference, Object)
 		Object.AngularSpeed /= TimeScaleDifference
 		Object.AngularVelocity /= TimeScaleDifference
+		Object.MotorMaxAcceleration /= TimeScaleDifference
 		Object.MotorMaxTorque /= TimeScaleDifference
 		Object.ServoMaxTorque /= TimeScaleDifference
-	elseif Object:IsA("Humanoid") then
+	end,
+	["Humanoid"] = function(TimeScaleDifference, Object)
 		Object.WalkSpeed /= TimeScaleDifference
-	elseif Object:IsA("LinearVelocity") then
+	end,
+	["LinearVelocity"] = function(TimeScaleDifference, Object)
 		Object.LineVelocity /= TimeScaleDifference
 		Object.PlaneVelocity = Vector2.new(
-			Object.PlaneVelocity.X / TimeScaleDifference,
-			Object.PlaneVelocity.Y / TimeScaleDifference
-		)
+			Object.PlaneVelocity.X,
+			Object.PlaneVelocity.Y
+		) / TimeScaleDifference
 		Object.VectorVelocity = Vector3.new(
-			Object.VectorVelocity.X / TimeScaleDifference,
-			Object.VectorVelocity.Y / TimeScaleDifference,
-			Object.VectorVelocity.Z / TimeScaleDifference
-		)
-	elseif Object:IsA("LineForce") then
+			Object.VectorVelocity.X,
+			Object.VectorVelocity.Y,
+			Object.VectorVelocity.Z
+		) / TimeScaleDifference
+	end,
+	["LineForce"] = function(TimeScaleDifference, Object)
 		Object.Magnitude /= TimeScaleDifference
-	elseif Object:IsA("Model") then
+	end,
+	["Model"] = function(TimeScaleDifference, Object)
 		if Object.PrimaryPart then
-			ForcesModule:Set(Object, false)
+			ForcesModule:Set(Object, true)
 		end
 		
 		for _, Descendant in pairs(Object:GetDescendants()) do
 			Module:Apply(TimeScaleDifference, Descendant)
 		end
-	elseif Object:IsA("ParticleEmitter") then
+	end,
+	["ParticleEmitter"] = function(TimeScaleDifference, Object)
 		Object.TimeScale /= TimeScaleDifference
-	elseif Object:IsA("PrismaticConstraint") then
+	end,
+	["PrismaticConstraint"] = function(TimeScaleDifference, Object)
 		Object.MotorMaxForce /= TimeScaleDifference
 		Object.ServoMaxForce /= TimeScaleDifference
-	elseif Object:IsA("Sound") then
+	end,
+	["Sound"] = function(TimeScaleDifference, Object)
 		Object.PlaybackSpeed /= TimeScaleDifference
-	elseif Object:IsA("Torque") then
+	end,
+	["Torque"] = function(TimeScaleDifference, Object)
 		Object.Torque /= TimeScaleDifference
-	elseif Object:IsA("VectorForce") then
+	end,
+	["VectorForce"] = function(TimeScaleDifference, Object)
 		Object.Force /= TimeScaleDifference
+	end,
+}
+
+function Module:Apply(TimeScaleDifference, Object)
+	if Object:IsA("BasePart") then
+		ApplyMethods["BasePart"](TimeScaleDifference, Object)
+	else
+		ApplyMethods[Object.ClassName](TimeScaleDifference, Object)
 	end
 end
 
