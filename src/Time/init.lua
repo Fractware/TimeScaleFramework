@@ -1,6 +1,8 @@
 local Time = {}
 
-local TimeScaleUtilities = require(game:GetService("ReplicatedStorage"):WaitForChild("TimeScaleUtilities"))
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+
+local TimeScaleUtilities = require(ReplicatedStorage:WaitForChild("TimeScaleUtilities"))
 
 local DataModule = require(script.Parent.Data)
 local FasterModule = require(script.Faster)
@@ -8,9 +10,9 @@ local SlowerModule = require(script.Slower)
 
 local function Set(Object)
 	local TimeScale = DataModule.TimeScale
-	
+
 	local TimeScaleDifference = (TimeScale - DataModule.PreviousTimeScale) + 1
-	
+
 	if TimeScaleDifference < 0 then
 		TimeScaleDifference = DataModule.PreviousTimeScale
 		FasterModule:Apply(TimeScaleDifference, Object)
@@ -33,7 +35,7 @@ end
 
 local function Unset(Object)
 	local TimeScale = DataModule.TimeScale
-	
+
 	if TimeScale ~= 1 then
 		FasterModule:Apply(TimeScale, Object)
 	end
