@@ -1,3 +1,5 @@
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+
 return {
 	PhysicsObjects = {
 		["AlignOrientation"] = {},
@@ -14,6 +16,6 @@ return {
 		["Torque"] = {},
 		["VectorForce"] = {},
 	},
-	PreviousTimeScale = game:GetService("ReplicatedStorage"):WaitForChild("TimeScaleUtilities"):GetAttribute("TimeScale"),
-	TimeScale = game:GetService("ReplicatedStorage"):WaitForChild("TimeScaleUtilities"):GetAttribute("TimeScale"),
+	PreviousTimeScale = ReplicatedStorage:WaitForChild("TimeScaleUtilities"):GetAttribute("TimeScale"),
+	TimeScale = ReplicatedStorage:WaitForChild("TimeScaleUtilities"):GetAttribute("TimeScale"),
 }

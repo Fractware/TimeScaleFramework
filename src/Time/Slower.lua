@@ -1,5 +1,8 @@
 local Module = {}
 
+local CollectionService = game:GetService("CollectionService")
+local Workspace = game:GetService("Workspace")
+
 local DataModule = require(script.Parent.Parent.Data)
 local ForcesModule = require(script.Parent.Forces)
 
@@ -20,12 +23,12 @@ local ApplyMethods = {
 		) / TimeScaleDifference
 	end,
 	["BasePart"] = function(TimeScaleDifference, Object)
-		if Object.Parent:IsA("Model") and Object.Parent ~= game:GetService("Workspace") and game:GetService("CollectionService"):HasTag(Object.Parent, "TimeScaleWhitelist") then
+		if Object.Parent:IsA("Model") and Object.Parent ~= Workspace and CollectionService:HasTag(Object.Parent, "TimeScaleWhitelist") then
 			return
 		end
-		
+
 		ForcesModule:Set(Object, true)
-		
+
 		Object.AssemblyAngularVelocity /= TimeScaleDifference
 		Object.AssemblyLinearVelocity /= TimeScaleDifference
 	end,
@@ -58,7 +61,7 @@ local ApplyMethods = {
 		if Object.PrimaryPart then
 			ForcesModule:Set(Object, true)
 		end
-		
+
 		for _, Descendant in pairs(Object:GetDescendants()) do
 			Module:Apply(TimeScaleDifference, Descendant)
 		end
