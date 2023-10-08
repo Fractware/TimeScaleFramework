@@ -39,7 +39,7 @@ local function RemoveInstance(Object)
 	end
 end
 
-for _, Object in pairs(CollectionService:GetTagged("TimeScaleWhitelist")) do
+for _, Object in CollectionService:GetTagged("TimeScaleWhitelist") do
 	AddInstance(Object)
 end
 

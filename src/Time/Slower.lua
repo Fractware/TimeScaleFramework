@@ -62,7 +62,7 @@ local ApplyMethods = {
 			ForcesModule:Set(Object, true)
 		end
 
-		for _, Descendant in pairs(Object:GetDescendants()) do
+		for _, Descendant in Object:GetDescendants() do
 			Module:Apply(TimeScaleDifference, Descendant)
 		end
 	end,

@@ -10,8 +10,8 @@ local StandardSpeeds = {}
 local function AdjustSpeed(AnimationTrack, TimeScale)
 	TimeScale = TimeScale or TimeScaleUtilities:GetAttribute("TimeScale")
 
-	for Animator, _ in pairs(Animators) do
-		for _, AnimatorAnimationTrack in pairs(Animator:GetPlayingAnimationTracks()) do
+	for Animator, _ in Animators do
+		for _, AnimatorAnimationTrack in Animator:GetPlayingAnimationTracks() do
 			if AnimatorAnimationTrack == AnimationTrack then
 				if CollectionService:HasTag(Animator, "TimeScaleWhitelist") then
 					AnimationTrack:AdjustSpeed(AnimationTrack.Length / (AnimationTrack.Length * TimeScale))
@@ -38,7 +38,7 @@ local function AddAnimator(Animator)
 	if (Animator:IsA("AnimationController") or Animator:IsA("Animator") or Animator:IsA("Humanoid")) and CollectionService:HasTag(Animator, "TimeScaleWhitelist") then
 		Animators[Animator] = true
 
-		for _, AnimationTrack in pairs(Animator:GetPlayingAnimationTracks()) do
+		for _, AnimationTrack in Animator:GetPlayingAnimationTracks() do
 			AddAnimationTrack(AnimationTrack)
 		end
 
@@ -56,7 +56,7 @@ CollectionService:GetInstanceRemovedSignal("TimeScaleWhitelist"):Connect(functio
 	if (Animator:IsA("AnimationController") or Animator:IsA("Animator") or Animator:IsA("Humanoid")) and CollectionService:HasTag(Animator, "TimeScaleWhitelist") then
 		local TimeScale = TimeScaleUtilities:GetAttribute("TimeScale")
 
-		for _, AnimationTrack in pairs(Animator:GetPlayingAnimationTracks()) do
+		for _, AnimationTrack in Animator:GetPlayingAnimationTracks() do
 			AnimationTrack:AdjustSpeed(AnimationTrack.Length / (AnimationTrack.Length * 1), TimeScaleUtilities:GetAttribute("TimeScale"))
 			AnimationTracks[AnimationTrack] = nil
 		end
@@ -65,14 +65,14 @@ CollectionService:GetInstanceRemovedSignal("TimeScaleWhitelist"):Connect(functio
 	end
 end)
 
-for _, Animator in pairs(CollectionService:GetTagged("TimeScaleWhitelist")) do
+for _, Animator in CollectionService:GetTagged("TimeScaleWhitelist") do
 	AddAnimator(Animator)
 end
 
 TimeScaleUtilities:GetAttributeChangedSignal("TimeScale"):Connect(function()
 	local TimeScale = TimeScaleUtilities:GetAttribute("TimeScale")
 
-	for _, AnimationTrack in pairs(AnimationTracks) do
+	for _, AnimationTrack in AnimationTracks do
 		AdjustSpeed(AnimationTrack, TimeScale)
 	end
 end)

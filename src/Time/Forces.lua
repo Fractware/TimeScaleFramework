@@ -57,7 +57,7 @@ function Module:Set(Object, State)
 			if Object.PrimaryPart then
 				local TotalMass = 0
 
-				for _, Descendant in pairs(Object:GetDescendants()) do
+				for _, Descendant in Object:GetDescendants() do
 					if Descendant:IsA("BasePart") then
 						TotalMass += AffectObject(Object, TimeScale, State)
 					end
@@ -70,7 +70,7 @@ function Module:Set(Object, State)
 		if Object:IsA("BasePart") then
 			AffectObject(Object, TimeScale, State)
 		elseif Object:IsA("Model") then
-			for _, Descendant in pairs(Object:GetDescendants()) do
+			for _, Descendant in Object:GetDescendants() do
 				if Descendant:IsA("BasePart") then
 					AffectObject(Object, TimeScale, State)
 				end

@@ -23,7 +23,7 @@ local function Set(Object)
 	if Object then
 		-- Only affect tweens for the specified object.
 	else
-		for _, Data in pairs(TimeScaleUtilities.TweenService.Tweens) do
+		for _, Data in TimeScaleUtilities.TweenService.Tweens do
 			Data.Tween:Cancel()
 			Data.TweenInfo = TweenInfo.new(Data.TweenInfo.Time / TimeScale, Data.TweenInfo.EasingStyle, Data.TweenInfo.EasingDirection, Data.TweenInfo.RepeatCount, Data.TweenInfo.Reverses, Data.TweenInfo.DelayTime)
 			Data.Tween = game:GetService("TweenService"):Create(Data.Instance, Data.TweenInfo, Data.Goal)
@@ -45,8 +45,8 @@ function Time:Apply(Object)
 	if Object then
 		Set(Object)
 	else
-		for Class, Objects in pairs(DataModule.PhysicsObjects) do
-			for Checking, _ in pairs(Objects) do
+		for Class, Objects in DataModule.PhysicsObjects do
+			for Checking, _ in Objects do
 				Set(Checking)
 			end
 		end
@@ -57,8 +57,8 @@ function Time:Unapply(Object)
 	if Object then
 		Unset(Object)
 	else
-		for Class, Objects in pairs(DataModule.PhysicsObjects) do
-			for Checking, _ in pairs(Objects) do
+		for Class, Objects in DataModule.PhysicsObjects do
+			for Checking, _ in Objects do
 				Unset(Checking)
 			end
 		end
