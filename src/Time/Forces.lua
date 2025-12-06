@@ -16,7 +16,7 @@ local function CreateGravityForce(TimeScale, Object, TotalMass)
 	GravityForce.Name = "GravityForce"
 	GravityForce.ApplyAtCenterOfMass = true
 	GravityForce.RelativeTo = Enum.ActuatorRelativeTo.World
-	GravityForce.Force = Vector3.new(0, (TotalMass * Workspace.Gravity) - (Workspace.Gravity / (TimeScale ^ 2)), 0)
+	GravityForce.Force = vector.create(0, (TotalMass * Workspace.Gravity) - (Workspace.Gravity / (TimeScale ^ 2)), 0)
 	GravityForce.Attachment0 = GravityAttachment
 	GravityAttachments[Object] = GravityAttachment
 	GravityForces[Object] = GravityForce

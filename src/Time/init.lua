@@ -35,10 +35,9 @@ end
 
 local function Unset(Object)
 	local TimeScale = DataModule.TimeScale
-
-	if TimeScale ~= 1 then
-		FasterModule:Apply(TimeScale, Object)
-	end
+	
+	if TimeScale == 1 then return end
+	FasterModule:Apply(TimeScale, Object)
 end
 
 function Time:Apply(Object)

@@ -16,7 +16,7 @@ local ApplyMethods = {
 		Object.MaxVelocity /= TimeScaleDifference
 	end,
 	["AngularVelocity"] = function(TimeScaleDifference, Object)
-		Object.AngularVelocity = Vector3.new(
+		Object.AngularVelocity = vector.create(
 			Object.AngularVelocity.X,
 			Object.AngularVelocity.Y,
 			Object.AngularVelocity.Z
@@ -46,7 +46,7 @@ local ApplyMethods = {
 			Object.PlaneVelocity.X,
 			Object.PlaneVelocity.Y
 		) / TimeScaleDifference
-		Object.VectorVelocity = Vector3.new(
+		Object.VectorVelocity = vector.create(
 			Object.VectorVelocity.X,
 			Object.VectorVelocity.Y,
 			Object.VectorVelocity.Z
