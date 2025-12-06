@@ -23,9 +23,7 @@ local ApplyMethods = {
 		) / TimeScaleDifference
 	end,
 	["BasePart"] = function(TimeScaleDifference, Object)
-		if Object.Parent:IsA("Model") and Object.Parent ~= Workspace and CollectionService:HasTag(Object.Parent, "TimeScaleWhitelist") then
-			return
-		end
+		if Object.Parent:IsA("Model") and Object.Parent ~= Workspace and CollectionService:HasTag(Object.Parent, "TimeScaleWhitelist") then return end
 
 		ForcesModule:Set(Object, true)
 

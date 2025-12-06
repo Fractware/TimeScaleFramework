@@ -21,17 +21,15 @@ function Module:Wait(WaitTime: number?): number
 
 	local Connection
 	Connection = RunService.Heartbeat:Connect(function(DeltaTime)
-		if Connection == nil then
-			return
-		end
+		if Connection == nil then return end
 
 		TimeElapsed += DeltaTime / TimeScale
-		if TimeElapsed >= WaitTime then
-			Connection:Disconnect()
-			Connection = nil
+		if TimeElapsed < WaitTime then return end
+		
+		Connection:Disconnect()
+		Connection = nil
 
-			task.spawn(Thread, TimeElapsed)
-		end
+		task.spawn(Thread, TimeElapsed)
 	end)
 
 	return coroutine.yield()

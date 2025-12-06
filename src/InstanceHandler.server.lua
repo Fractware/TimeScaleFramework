@@ -4,14 +4,12 @@ local DataModule = require(script.Parent.Data)
 local TimeModule = require(script.Parent.Time)
 
 local function AddInstance(Object)
-	if not Object:IsA("BasePart") and not DataModule[Object.ClassName] then
-		return
-	end
+	if not Object:IsA("BasePart") and not DataModule[Object.ClassName] then return end
 	
 	if Object:IsA("BasePart") then
 		DataModule.PhysicsObjects["BasePart"][Object] = true
 	else
-		if DataModule.PhysicsObjects[Object.ClassName] then
+		if not DataModule.PhysicsObjects[Object.ClassName] then
 			DataModule.PhysicsObjects[Object.ClassName][Object] = true
 		end
 	end
@@ -22,9 +20,7 @@ local function AddInstance(Object)
 end
 
 local function RemoveInstance(Object)
-	if not Object:IsA("BasePart") and not DataModule[Object.ClassName] then
-		return
-	end
+	if not Object:IsA("BasePart") and not DataModule[Object.ClassName] then return end
 	
 	if DataModule.TimeScale ~= 1 then
 		TimeModule:Apply(Object)
