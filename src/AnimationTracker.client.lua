@@ -1,17 +1,21 @@
+local CollectionService = game:GetService("CollectionService")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+
+local TimeScaleUtilities = ReplicatedStorage:WaitForChild("TimeScaleUtilities")
+
 local AnimationTracks = {}
 local Animators = {}
 local StandardSpeeds = {}
-local TimeScale = game:GetService("ReplicatedStorage"):WaitForChild("TimeScaleUtilities"):GetAttribute("TimeScale")
 
-local function AdjustSpeed(AnimationTrack)
-	for Animator, _ in pairs(Animators) do
-		for _, AnimatorAnimationTrack in pairs(Animator:GetPlayingAnimationTracks()) do
-			if AnimatorAnimationTrack == AnimationTrack then
-				if game:GetService("CollectionService"):HasTag(Animator, "TimeScaleWhitelist") then
-					AnimationTrack:AdjustSpeed(AnimationTrack.Length / (AnimationTrack.Length * TimeScale))
-					break
-				end
-			end
+local function AdjustSpeed(AnimationTrack, TimeScale)
+	TimeScale = TimeScale or TimeScaleUtilities:GetAttribute("TimeScale")
+
+	for Animator, _ in Animators do
+		for _, AnimatorAnimationTrack in Animator:GetPlayingAnimationTracks() do
+			if AnimatorAnimationTrack ~= AnimationTrack then continue end
+			if not CollectionService:HasTag(Animator, "TimeScaleWhitelist") then continue end
+			AnimationTrack:AdjustSpeed(1 / TimeScale)
+			break
 		end
 	end
 end
@@ -29,10 +33,10 @@ local function AddAnimationTrack(AnimationTrack)
 end
 
 local function AddAnimator(Animator)
-	if (Animator:IsA("AnimationController") or Animator:IsA("Animator") or Animator:IsA("Humanoid")) and game:GetService("CollectionService"):HasTag(Animator, "TimeScaleWhitelist") then
+	if (Animator:IsA("AnimationController") or Animator:IsA("Animator") or Animator:IsA("Humanoid")) and CollectionService:HasTag(Animator, "TimeScaleWhitelist") then
 		Animators[Animator] = true
 
-		for _, AnimationTrack in pairs(Animator:GetPlayingAnimationTracks()) do
+		for _, AnimationTrack in Animator:GetPlayingAnimationTracks() do
 			AddAnimationTrack(AnimationTrack)
 		end
 
@@ -42,14 +46,16 @@ local function AddAnimator(Animator)
 	end
 end
 
-game:GetService("CollectionService"):GetInstanceAddedSignal("TimeScaleWhitelist"):Connect(function(Animator)
+CollectionService:GetInstanceAddedSignal("TimeScaleWhitelist"):Connect(function(Animator)
 	AddAnimator(Animator)
 end)
 
-game:GetService("CollectionService"):GetInstanceRemovedSignal("TimeScaleWhitelist"):Connect(function(Animator)
-	if (Animator:IsA("AnimationController") or Animator:IsA("Animator") or Animator:IsA("Humanoid")) and game:GetService("CollectionService"):HasTag(Animator, "TimeScaleWhitelist") then
-		for _, AnimationTrack in pairs(Animator:GetPlayingAnimationTracks()) do
-			AnimationTrack:AdjustSpeed(AnimationTrack.Length / (AnimationTrack.Length * 1))
+CollectionService:GetInstanceRemovedSignal("TimeScaleWhitelist"):Connect(function(Animator)
+	if (Animator:IsA("AnimationController") or Animator:IsA("Animator") or Animator:IsA("Humanoid")) and CollectionService:HasTag(Animator, "TimeScaleWhitelist") then
+		local TimeScale = TimeScaleUtilities:GetAttribute("TimeScale")
+
+		for _, AnimationTrack in Animator:GetPlayingAnimationTracks() do
+			AnimationTrack:AdjustSpeed(1)
 			AnimationTracks[AnimationTrack] = nil
 		end
 
@@ -57,14 +63,14 @@ game:GetService("CollectionService"):GetInstanceRemovedSignal("TimeScaleWhitelis
 	end
 end)
 
-for _, Animator in pairs(game:GetService("CollectionService"):GetTagged("TimeScaleWhitelist")) do
+for _, Animator in CollectionService:GetTagged("TimeScaleWhitelist") do
 	AddAnimator(Animator)
 end
 
-game:GetService("ReplicatedStorage"):WaitForChild("TimeScaleUtilities"):GetAttributeChangedSignal("TimeScale"):Connect(function()
-	TimeScale = game:GetService("ReplicatedStorage").TimeScaleUtilities:GetAttribute("TimeScale")
+TimeScaleUtilities:GetAttributeChangedSignal("TimeScale"):Connect(function()
+	local TimeScale = TimeScaleUtilities:GetAttribute("TimeScale")
 
-	for _, AnimationTrack in pairs(AnimationTracks) do
-		AdjustSpeed(AnimationTrack)
+	for _, AnimationTrack in AnimationTracks do
+		AdjustSpeed(AnimationTrack, TimeScale)
 	end
 end)
